@@ -1,0 +1,76 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/instrument-sans';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { t, htmlLang, ogLocale, other, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** Path after the language prefix, e.g. '' for home or 'fruidoku/' */
+  path: string;
+  og: string;
+  jsonld?: object[];
+  extraHead?: string;
+}
+const { lang, title, description, path, og, jsonld = [] } = Astro.props;
+const site = Astro.site!;
+const url = (l: Lang) => new URL(`/${l}/${path}`, site).href;
+const ogUrl = new URL(og, site).href;
+const alt = other(lang);
+---
+<!doctype html>
+<html lang={htmlLang(lang)}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={url(lang)} />
+  <link rel="alternate" hreflang="en" href={url('en')} />
+  <link rel="alternate" hreflang="pt-PT" href={url('pt')} />
+  <link rel="alternate" hreflang="x-default" href={url('en')} />
+  <meta name="theme-color" content="#F1F4FA" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={SITE.name} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={url(lang)} />
+  <meta property="og:image" content={ogUrl} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={title} />
+  <meta property="og:locale" content={ogLocale(lang)} />
+  <meta property="og:locale:alternate" content={ogLocale(alt)} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <slot name="head" />
+  {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+</head>
+<body>
+  <a class="skip" href="#main">{t(lang, 'skip')}</a>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href={`/${lang}/`} aria-label={t(lang, 'brand.home')}><i aria-hidden="true">RC</i>Rui Costa</a>
+      <nav class="lang" aria-label={t(lang, 'lang.label')}>
+        <a href={`/en/${path}`} lang="en" hreflang="en" aria-current={lang === 'en' ? 'true' : undefined} data-lang="en">EN</a>
+        <a href={`/pt/${path}`} lang="pt-PT" hreflang="pt-PT" aria-current={lang === 'pt' ? 'true' : undefined} data-lang="pt">PT</a>
+      </nav>
+    </header>
+  </div>
+  <slot name="nav" />
+  <main id="main">
+    <slot />
+  </main>
+  <script>
+    // Remember the chosen language for the "/" redirect.
+    document.querySelectorAll<HTMLAnchorElement>('.lang a').forEach((a) =>
+      a.addEventListener('click', () => { try { localStorage.setItem('lang', a.dataset.lang!); } catch {} }));
+  </script>
+</body>
+</html>

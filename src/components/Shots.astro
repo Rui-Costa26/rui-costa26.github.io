@@ -1,0 +1,15 @@
+---
+import { Image } from 'astro:assets';
+import type { Shot } from '../data/projects';
+import { pick, type Lang } from '../i18n';
+interface Props { shots: Shot[]; label: string; lang: Lang; eager?: boolean; sizes?: string }
+const { shots, label, lang, eager = false, sizes = '(min-width: 900px) 160px, 210px' } = Astro.props;
+---
+<ul class="shots" tabindex="0" role="list" aria-label={label}>
+  {shots.map((s) => (
+    <li>
+      <Image src={s.src} alt={pick(lang, s.alt)} widths={[240, 420, 640]} sizes={sizes} format="webp" quality={78}
+        loading={eager ? 'eager' : 'lazy'} decoding="async" />
+    </li>
+  ))}
+</ul>

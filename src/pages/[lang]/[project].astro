@@ -1,0 +1,96 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Shots from '../../components/Shots.astro';
+import FruidokuDemo from '../../components/FruidokuDemo.astro';
+import Footer from '../../components/Footer.astro';
+import { t, pick, LANGS, type Lang } from '../../i18n';
+import { SITE } from '../../data/site';
+import { projects, type Project } from '../../data/projects';
+
+export function getStaticPaths() {
+  return LANGS.flatMap((lang) => projects.map((p) => ({ params: { lang, project: p.slug }, props: { p } })));
+}
+const { p } = Astro.props as { p: Project };
+const lang = Astro.params.lang as Lang;
+const site = Astro.site!;
+const others = projects.filter((x) => x.slug !== p.slug);
+const linkLabel = { appstore: 'link.appstore', support: 'link.support', privacy: 'link.privacy', legal: 'link.legal' } as const;
+const jsonld: object[] = [];
+if (p.status === 'live' && p.appStoreId) {
+  jsonld.push({
+    '@context': 'https://schema.org', '@type': 'MobileApplication', name: p.storeName,
+    operatingSystem: 'iOS', applicationCategory: p.category,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+    installUrl: `https://apps.apple.com/app/id${p.appStoreId}`,
+    author: { '@type': 'Person', name: SITE.name, url: new URL(`/${lang}/`, site).href },
+  });
+}
+---
+<Base lang={lang} title={pick(lang, p.seo.title)} description={pick(lang, p.seo.desc)} path={`${p.slug}/`} og={`/og/${p.slug}-${lang}.png`} jsonld={jsonld}>
+  {p.appStoreId && <meta slot="head" name="apple-itunes-app" content={`app-id=${p.appStoreId}`} />}
+  <div class="wrap">
+    <div class="cs-top"><a class="back" href={`/${lang}/#apps`}><span aria-hidden="true">←</span> {t(lang, 'cs.back')}</a></div>
+    <div class={`app ${p.theme} cs-head`}>
+      <div>
+        <div class="app-id">
+          <Image src={p.icon} alt={t(lang, 'app.icon', { name: p.name })} width={96} height={96} densities={[1, 2]} format="webp" loading="eager" />
+          <div>
+            <h1>{p.name}</h1>
+            <span class="status">{t(lang, p.status === 'live' ? 'status.live' : 'status.review')}</span>
+          </div>
+        </div>
+        <p class="cs-intro">{pick(lang, p.intro)}</p>
+        <ul class="links">
+          {p.links.map((l) => <li><a class={`btn${l.kind === 'appstore' ? ' primary' : ''}`} href={l.url}>{t(lang, linkLabel[l.kind])}</a></li>)}
+        </ul>
+      </div>
+      {p.hasDemo ? (
+        <div class="play" style="grid-column:auto;display:block">
+          <h2 class="sr">{t(lang, 'play.h')}</h2>
+          <FruidokuDemo lang={lang} />
+        </div>
+      ) : (
+        <Shots shots={p.shots[lang].slice(0, 3)} label={t(lang, 'app.shots', { name: p.name })} lang={lang} eager />
+      )}
+    </div>
+
+    <div class="cs-grid">
+      <div class="tray prose">
+        {p.sections.map((s, i) => (
+          <>
+            <h2 style={i ? 'margin-top:32px' : undefined}>{pick(lang, s.h)}</h2>
+            {s.body.map((b) => <p>{pick(lang, b)}</p>)}
+            {s.list && <ul>{s.list.map((li) => <li>{pick(lang, li)}</li>)}</ul>}
+          </>
+        ))}
+      </div>
+      <div class="tray">
+        <h2 style="font-size:1.6rem;margin-bottom:10px">{t(lang, 'cs.spec')}</h2>
+        <table class="spec">
+          <tbody>{p.spec.map((s) => <tr><th scope="row">{pick(lang, s.term)}</th><td>{pick(lang, s.detail)}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <section class="cs-shots" aria-labelledby="shots-h">
+      <div class="sec-head"><h2 id="shots-h">{t(lang, 'cs.shots')}</h2></div>
+      <Shots shots={p.shots[lang]} label={t(lang, 'app.shots', { name: p.name })} lang={lang} sizes="200px" />
+    </section>
+
+    {others.length > 0 && (
+      <section aria-labelledby="other-h">
+        <div class="sec-head"><h2 id="other-h">{t(lang, 'cs.other')}</h2></div>
+        {others.map((o) => (
+          <a class={`app ${o.theme}`} href={`/${lang}/${o.slug}/`} style="text-decoration:none;display:block">
+            <div class="app-id" style="margin:0">
+              <Image src={o.icon} alt="" width={76} height={76} densities={[1, 2]} format="webp" />
+              <div><h3>{o.name}</h3><span class="status">{t(lang, o.status === 'live' ? 'status.live' : 'status.review')}</span></div>
+            </div>
+          </a>
+        ))}
+      </section>
+    )}
+    <Footer lang={lang} />
+  </div>
+</Base>

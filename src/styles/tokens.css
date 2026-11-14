@@ -1,0 +1,26 @@
+/* Design tokens: Concept A2 "Tiles" (see design-spec.md, Revision 1). */
+:root {
+  color-scheme: light;
+  --paper: #F1F4FA;
+  --surface: #FFFFFF;
+  --sky: #DCE5FB;
+  --ink: #111C3A;
+  --soft: #525E7A;
+  --cobalt: #2346C4;
+  --cobalt-deep: #17308F;
+  --yellow: #F6C445;
+  --line: #AEB8D2;
+  /* App plates keep their own colours */
+  --cream: #FFF6E7;
+  --fd-ink: #1C2B23;
+  --fd-soft: #56685D;
+  --leaf: #2E7D4F;
+  --teal: #0F6F66;
+  --teal-ink: #0A4F49;
+
+  --display: "Bricolage Grotesque Variable", "Avenir Next", system-ui, sans-serif;
+  --body: "Instrument Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r-l: 26px;
+  --r-m: 18px;
+  --wrap: 1120px;
+}

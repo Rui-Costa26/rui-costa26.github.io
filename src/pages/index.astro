@@ -1,0 +1,27 @@
+---
+// "/" picks a language: the visitor's saved choice, else Portuguese for pt browsers, else English.
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rui Costa, iOS developer</title>
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href={new URL('/en/', Astro.site).href} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <script is:inline>
+    (function () {
+      var l = null;
+      try { l = localStorage.getItem('lang'); } catch (e) {}
+      if (l !== 'en' && l !== 'pt') l = /^pt/i.test(navigator.language || '') ? 'pt' : 'en';
+      location.replace('/' + l + '/' + location.hash);
+    })();
+  </script>
+  <noscript><meta http-equiv="refresh" content="0;url=/en/" /></noscript>
+  <style>body{font-family:system-ui,sans-serif;background:#F1F4FA;color:#111C3A;display:grid;place-items:center;min-height:100vh;margin:0}a{color:#2346C4;margin:0 10px}</style>
+</head>
+<body>
+  <p><a href="/en/" hreflang="en">English</a> <a href="/pt/" hreflang="pt-PT" lang="pt-PT">Português</a></p>
+</body>
+</html>

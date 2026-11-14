@@ -1,0 +1,40 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+import { t, pick, type Lang } from '../i18n';
+import Shots from './Shots.astro';
+import FruidokuDemo from './FruidokuDemo.astro';
+interface Props { p: Project; lang: Lang }
+const { p, lang } = Astro.props;
+const linkLabel = { appstore: 'link.appstore', support: 'link.support', privacy: 'link.privacy', legal: 'link.legal' } as const;
+---
+<article class={`app ${p.theme}`} id={p.slug} aria-labelledby={`${p.slug}-h`}>
+  <div>
+    <div class="app-id">
+      <Image src={p.icon} alt={t(lang, 'app.icon', { name: p.name })} width={76} height={76} densities={[1, 2]} format="webp" />
+      <div>
+        <h3 id={`${p.slug}-h`}>{p.name}</h3>
+        <span class="status">{t(lang, p.status === 'live' ? 'status.live' : 'status.review')}</span>
+      </div>
+    </div>
+    <p class="desc">{pick(lang, p.desc)}</p>
+    <ul class="facts">
+      {p.facts.map((f) => <li><b>{pick(lang, f.value)}</b><span>{pick(lang, f.label)}</span></li>)}
+    </ul>
+    <p class="stack"><b>{t(lang, 'builtWith')}</b> {pick(lang, p.stack)}</p>
+    <ul class="links">
+      {p.links.map((l) => <li><a class={`btn${l.kind === 'appstore' ? ' primary' : ''}`} href={l.url}>{t(lang, linkLabel[l.kind])}</a></li>)}
+      <li><a class="btn" href={`/${lang}/${p.slug}/`}>{t(lang, 'app.more', { name: p.name })}</a></li>
+    </ul>
+  </div>
+  <Shots shots={p.shots[lang].slice(0, 3)} label={t(lang, 'app.shots', { name: p.name })} lang={lang} />
+  {p.hasDemo && (
+    <div class="play">
+      <div>
+        <h4>{t(lang, 'play.h')}</h4>
+        <p>{t(lang, 'play.p')}</p>
+      </div>
+      <FruidokuDemo lang={lang} />
+    </div>
+  )}
+</article>

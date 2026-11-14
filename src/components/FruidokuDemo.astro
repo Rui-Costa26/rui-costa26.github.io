@@ -1,0 +1,54 @@
+---
+import '../styles/demo.css';
+import FruitSprite from './FruitSprite.astro';
+import { LEVELS } from '../demo/levels';
+import { FRUITS } from '../demo/engine';
+import { t, demoStrings, type Lang } from '../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const level = LEVELS[0];
+const n = level.size;
+const fill = (s: string, o: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(o[k]));
+const S = demoStrings(lang) as Record<string, any>;
+---
+<FruitSprite />
+<fruidoku-board class="fd" data-strings={JSON.stringify(S)}>
+  <div class="fd-top">
+    <span class="fd-level">{fill(S.level, { n: 1, s: n })}</span>
+    <span class="fd-lives" role="img" aria-label={fill(S.lives, { n: 3 })}><i class="on"></i><i class="on"></i><i class="on"></i></span>
+  </div>
+  <div class="fd-board" role="grid" aria-label={fill(S.board, { s: n })} style={`--n:${n}`}>
+    {level.regions.map((row, r) => (
+      <div class="fd-row" role="row">
+        {row.map((reg, c) => (
+          <button type="button" class="fd-cell" role="gridcell" disabled tabindex={r === 0 && c === 0 ? 0 : -1}
+            data-r={r} data-c={c} data-fruit={FRUITS[reg]}
+            aria-label={fill(S.cell, { r: r + 1, c: c + 1, f: S.fruits[FRUITS[reg]], st: S.empty })}></button>
+        ))}
+      </div>
+    ))}
+  </div>
+  <p class="fd-status" role="status" aria-live="polite">{S.intro}</p>
+  <noscript><p class="fd-keys">{t(lang, 'play.nojs')}</p></noscript>
+  <div class="fd-controls">
+    <div class="fd-mode" role="group" aria-label={t(lang, 'fd.mode')}>
+      <button type="button" data-mode="mark" aria-pressed="true" disabled>{t(lang, 'fd.mark')}</button>
+      <button type="button" data-mode="plant" aria-pressed="false" disabled>{t(lang, 'fd.plant')}</button>
+    </div>
+    <button type="button" class="fd-btn" data-act="restart" disabled>{t(lang, 'fd.restart')}</button>
+    <button type="button" class="fd-btn fd-next" data-act="next" hidden disabled>{t(lang, 'fd.next')}</button>
+  </div>
+  <p class="fd-keys">{t(lang, 'fd.keys')}</p>
+</fruidoku-board>
+<script>
+  // Load the game only when the board comes near the viewport.
+  const boards = document.querySelectorAll('fruidoku-board');
+  const load = () => import('../demo/fruidoku-board');
+  if (!('IntersectionObserver' in window)) load();
+  else {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); load(); }
+    }, { rootMargin: '400px 0px' });
+    boards.forEach((b) => io.observe(b));
+  }
+</script>

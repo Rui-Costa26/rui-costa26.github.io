@@ -1,0 +1,15 @@
+---
+import { t, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<footer class="foot">
+  <ul>
+    <li><a href={SITE.legal.fruidoku}>{t(lang, 'ft.fd')}</a></li>
+    <li><a href={SITE.legal.formly}>{t(lang, 'ft.fm')}</a></li>
+    <li><a href={SITE.linkedin}>LinkedIn</a></li>
+    <li><a href={SITE.github}>GitHub</a></li>
+  </ul>
+  <p>{t(lang, 'ft.note')}</p>
+</footer>

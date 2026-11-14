@@ -1,0 +1,28 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource-variable/instrument-sans';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { t } from '../i18n';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{t('en', '404.title')} · Rui Costa</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+</head>
+<body style="padding-bottom:0">
+  <main class="wrap notfound">
+    <h1>404</h1>
+    <div><h2 style="font-size:1.6rem">{t('en', '404.title')}</h2><p>{t('en', '404.p')}</p></div>
+    <div lang="pt-PT"><h2 style="font-size:1.6rem">{t('pt', '404.title')}</h2><p>{t('pt', '404.p')}</p></div>
+    <ul class="links" style="margin:0">
+      <li><a class="btn primary" href="/en/" hreflang="en">Rui Costa · English</a></li>
+      <li><a class="btn" href="/pt/" hreflang="pt-PT" lang="pt-PT">Rui Costa · Português</a></li>
+    </ul>
+  </main>
+</body>
+</html>

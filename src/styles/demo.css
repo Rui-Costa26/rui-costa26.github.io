@@ -1,0 +1,37 @@
+/* Fruidoku demo. Tile colours are the app's tileColor values (light set). */
+.fd{--fd-gap:5px;--fd-radius:22%;--fd-ink:currentColor;display:grid;gap:12px;width:100%;max-width:var(--fd-max,420px)}
+.fd-top{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:.95rem}
+.fd-lives{display:inline-flex;gap:6px}
+.fd-lives i{width:14px;height:14px;border-radius:50%;background:var(--fd-life-off,rgba(128,128,128,.3));transition:background .2s}
+.fd-lives i.on{background:var(--fd-life,#C62E3D)}
+.fd-board{display:grid;gap:var(--fd-gap);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.fd-row{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:var(--fd-gap)}
+.fd-cell{aspect-ratio:1;border:0;padding:0;margin:0;border-radius:var(--fd-radius);background:var(--tile);cursor:pointer;display:grid;place-items:center;min-width:0;-webkit-tap-highlight-color:transparent;box-shadow:var(--fd-shadow,none)}
+.fd-cell:focus-visible{outline:3px solid var(--fd-focus,#1C2B23);outline-offset:2px;z-index:1}
+.fd-cell svg{width:78%;height:78%;display:block}
+.fd-cell[data-s=x] svg,.fd-cell[data-s=bad] svg{width:100%;height:100%}
+.fd-cell path{stroke:#fff;stroke-width:9;stroke-linecap:round;fill:none}
+.fd-cell[data-s=bad]{box-shadow:inset 0 0 0 3px var(--fd-bad,#C62E3D)}
+.fd-cell[data-s=fruit]{cursor:default}
+@media (prefers-reduced-motion:no-preference){
+  .fd-cell[data-s=fruit] svg{animation:fd-pop .32s cubic-bezier(.3,1.5,.5,1)}
+  .fd-cell[data-s=bad]{animation:fd-shake .28s}
+}
+@keyframes fd-pop{from{transform:scale(.3)}to{transform:scale(1)}}
+@keyframes fd-shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.fd-status{margin:0;min-height:2.8em;font-size:.92rem;line-height:1.4}
+.fd-status[data-kind=wrong],.fd-status[data-kind=over]{color:var(--fd-bad-text,#B3202F);font-weight:600}
+.fd-status[data-kind=solved]{font-weight:600}
+.fd-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fd-mode{display:inline-flex;padding:3px;border-radius:999px;background:var(--fd-ctl-bg,rgba(128,128,128,.16))}
+.fd-mode button,.fd-btn{font:inherit;font-size:.9rem;font-weight:600;min-height:44px;padding:0 16px;border-radius:999px;border:0;background:transparent;color:inherit;cursor:pointer}
+.fd-mode button[aria-pressed=true]{background:var(--fd-ctl-on,#fff);color:var(--fd-ctl-on-ink,#1C2B23)}
+.fd-btn{border:1.5px solid var(--fd-ctl-line,rgba(128,128,128,.4))}
+.fd-next{background:var(--fd-accent,#2E7D4F);border-color:transparent;color:var(--fd-on-accent,#fff)}
+.fd button:focus-visible{outline:3px solid var(--fd-focus,#1C2B23);outline-offset:2px}
+[data-fruit=cherry]{--tile:#E35D66}[data-fruit=orange]{--tile:#F3A15A}[data-fruit=banana]{--tile:#E6BF45}
+[data-fruit=blueberry]{--tile:#5AA7E8}[data-fruit=grape]{--tile:#A774D6}[data-fruit=pear]{--tile:#98C456}
+.fd{--fd-focus:#1C2B23;--fd-accent:#2E7D4F;--fd-ctl-bg:#EEF4EE;max-width:none}
+fruidoku-board{display:grid}
+fruidoku-board:not([data-ready]) .fd-controls{visibility:hidden}
+.fd-keys{font-size:.82rem;color:#56685D;margin:0}
